@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ plan.title }}</title>
+</head>
+<body>
+    <h1>{{ plan.title }}</h1>
+
+    <pre>{{ plan.current_markdown }}</pre>
+
+    <p>
+        Tags:
+        {% for tag in plan.tags.all %}
+            {{ tag.name }}
+        {% empty %}
+            none
+        {% endfor %}
+    </p>
+
+    <h2>Versions</h2>
+
+    <ul>
+        {% for v in versions %}
+            <li>
+                {{ v.created_at }} — {{ v.note }}
+
+                <form method="post" action="{% url 'plans:plan_restore_version' plan.pk v.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Restore</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>No versions yet.</li>
+        {% endfor %}
+    </ul>
+
+    <p>
+    <a href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
+    </p>
+
+    <a href="{% url 'plans:plan_list' %}">Back to list</a>
+</body>
+</html>

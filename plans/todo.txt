@@ -1,0 +1,6 @@
+TODO:
+
+-   make a section to put in PR's with dates included.
+
+-   make progress and history exportable to a single file that can be analyzed  by an LLM
+

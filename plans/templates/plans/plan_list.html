@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plans</title>
+</head>
+<body>
+    <p><a href="{% url 'plans:plan_create' %}">New plan</a></p>
+
+    <h1>Training Plans</h1>
+
+    <ul>
+        {% for plan in plans %}
+        <li>
+        <a href="{% url 'plans:plan_detail' plan.pk %}">
+            {{ plan.title }}
+        </a>
+        </li>
+        {% empty %}
+            <li>No plans yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
