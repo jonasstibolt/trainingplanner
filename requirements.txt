@@ -1,5 +1,6 @@
 asgiref==3.11.0
 asttokens==3.0.1
+bleach==6.3.0
 decorator==5.2.1
 Django==5.2.9
 executing==2.2.1
@@ -18,3 +19,4 @@ sqlparse==0.5.5
 stack-data==0.6.3
 traitlets==5.14.3
 wcwidth==0.2.14
+webencodings==0.5.1

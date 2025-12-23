@@ -1,9 +1,14 @@
+{% load markdown_extras %}
+
 {% extends "plans/base.html" %}
 {% block title %}{{ plan.title }}{% endblock %}
 {% block content %}
     <h1>{{ plan.title }}</h1>
 
-    <pre>{{ plan.current_markdown }}</pre>
+    <div>
+    {{ plan.current_markdown|render_markdown }}
+    </div>
+
 
     <p>
         Tags:
