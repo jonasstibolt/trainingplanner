@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ plan.title }}</title>
-</head>
-<body>
+{% extends "plans/base.html" %}
+{% block title %}{{ plan.title }}{% endblock %}
+{% block content %}
     <h1>{{ plan.title }}</h1>
 
     <pre>{{ plan.current_markdown }}</pre>
@@ -40,4 +37,5 @@
 
     <a href="{% url 'plans:plan_list' %}">Back to list</a>
 </body>
-</html>
+{% endblock %}
+

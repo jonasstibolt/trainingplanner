@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Training Planner{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'plans:plan_list' %}">Plans</a>
+        |
+        <a href="{% url 'plans:plan_create' %}">New plan</a>
+    </nav>
+
+    <hr>
+
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Plans</title>
-</head>
-<body>
-    <p><a href="{% url 'plans:plan_create' %}">New plan</a></p>
+{% extends "plans/base.html" %}
+{% block title %}Plans{% endblock %}
+{% block content %}
+
 
     <h1>Training Plans</h1>
 
@@ -13,11 +10,11 @@
         <li>
         <a href="{% url 'plans:plan_detail' plan.pk %}">
             {{ plan.title }}
+            {{ plan.description }}
         </a>
         </li>
         {% empty %}
             <li>No plans yet.</li>
         {% endfor %}
     </ul>
-</body>
-</html>
+{% endblock %}
