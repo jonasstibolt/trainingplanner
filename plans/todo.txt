@@ -4,3 +4,4 @@ TODO:
 
 -   make progress and history exportable to a single file that can be analyzed  by an LLM
 
+-   Nesting all the plans so micro-, (meso-), and macrocycle (of say 3 months). Micros (individual workouts) carry tags etc. Meso can be 2-3 week cycles (carrying another type of tag known as focuses). Macro (3 months) carry a different type, called targets. Goals are like targets, but clearly defined ones driving the macrocycle
