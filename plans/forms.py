@@ -1,5 +1,5 @@
 from django import forms
-from .models import Plan
+from .models import Plan, Tag 
 
 DEFAULT_MARKDOWN = """# New 3-month plan
 
@@ -14,9 +14,17 @@ DEFAULT_MARKDOWN = """# New 3-month plan
 """
 
 class PlanForm(forms.ModelForm):
+
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.order_by("name"),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     class Meta:
         model = Plan
-        fields = ["title", "description", "current_markdown"]
+        fields = ["title", "description", "tags", "current_markdown"]
+        
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
