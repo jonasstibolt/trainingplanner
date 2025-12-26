@@ -5,6 +5,35 @@
 
     <h1>Training Plans</h1>
 
+    <form method="get">
+        <input type="text" name="q" placeholder="Search..." value="{{ q }}">
+
+        <fieldset>
+            <legend>Tags</legend>
+
+            {% for t in tags %}
+                <label style="display:inline-block; margin-right: 10px;">
+                    <input
+                        type="checkbox"
+                        name="tags"
+                        value="{{ t.name }}"
+                        {% if t.name in selected_tags %}checked{% endif %}
+                    >
+                    {{ t.name }}
+                </label>
+            {% endfor %}
+        </fieldset>
+
+        <button type="submit">Filter</button>
+
+        {% if q or selected_tags %}
+            <a href="{% url 'plans:plan_list' %}">Clear</a>
+        {% endif %}
+    </form>
+
+    <hr>
+
+
     <ul>
         {% for plan in plans %}
         <li>

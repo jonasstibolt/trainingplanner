@@ -3,6 +3,10 @@
 {% load markdown_extras %}
 {% block title %}{{ plan.title }}{% endblock %}
 {% block content %}
+    <p>
+    <a href="{% url 'plans:plan_overview' plan.pk %}">Overview</a>
+    </p>
+
     <h1>{{ plan.title }}</h1>
 
     <div>

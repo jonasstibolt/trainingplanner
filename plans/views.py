@@ -1,13 +1,37 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Plan, PlanVersion
+from django.db.models import Q
+from .models import Plan, PlanVersion, Tag
 from .forms import PlanForm
 from django.views.decorators.http import require_POST
 
 
 
 def plan_list(request):
+    q = request.GET.get("q", "").strip()
+    selected_tags = request.GET.getlist("tags")
+
     plans = Plan.objects.all()
-    return render(request, "plans/plan_list.html", {"plans": plans})
+
+    if q:
+        plans = plans.filter(
+            Q(title__icontains=q)
+            | Q(description__icontains=q)
+            | Q(current_markdown__icontains=q)
+        )
+
+    if selected_tags:
+        plans = plans.distinct().filter(tags__name__in=selected_tags)
+
+    tags = Tag.objects.order_by("name")
+
+    return render(request, "plans/plan_list.html", {
+        "plans": plans,
+        "tags": tags,
+        "q": q,
+        "selected_tags": selected_tags,
+    })
+
+
 
 def plan_detail(request, pk):
     plan = get_object_or_404(Plan, pk=pk)
@@ -33,7 +57,7 @@ def plan_edit(request, pk):
                 )
 
             updated_plan.save()
-            form.save_m2m()  # harmless now, crucial later when we add tags editing
+            form.save_m2m()
             return redirect("plans:plan_detail", pk=plan.pk)
     else:
         form = PlanForm(instance=plan)
@@ -70,3 +94,7 @@ def plan_restore_version(request, pk, version_id):
     plan.save(update_fields=["current_markdown"])
 
     return redirect("plans:plan_detail", pk=plan.pk)
+
+def plan_overview(request, pk):
+    plan = get_object_or_404(Plan, pk=pk)
+    return render(request, "plans/plan_overview.html", {"plan": plan})
