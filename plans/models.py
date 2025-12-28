@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
@@ -84,9 +85,21 @@ class Workout(models.Model):
     offset_days = models.PositiveIntegerField()  # relative to plan start_date
     type = models.CharField(max_length=30, blank=True)
     note = models.TextField(blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    def mark_complete(self):
+        self.completed_at = timezone.now()
+    
+    def mark_incomplete(self):
+        self.completed_at = None
+
 
     class Meta:
         ordering = ["offset_days", "id"]
+
+    @property
+    def is_completed(self):
+        return self.completed_at is not None
 
     def __str__(self):
         return f"{self.block.title} / D+{self.offset_days} / {self.title}"

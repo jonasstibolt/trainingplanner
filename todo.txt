@@ -11,3 +11,6 @@ TODO:
 -   Make Alternatives become entire workouts including workoutItem or workoutItem
 
 -   Include a clear way in the DSL to edit specific training blocks or workouts instead of regenerating the entire macrocycle (using IDs?)
+
+-   mark_completion on workout with or without having followed the workout to a T, or having done adjustments to weights, reps, RIR, whatever
+

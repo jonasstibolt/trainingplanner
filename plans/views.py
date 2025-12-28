@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from .models import Plan, PlanVersion, Tag
+from .models import Plan, PlanVersion, Tag, Workout, Block
 from .forms import PlanForm
 from django.views.decorators.http import require_POST
 
@@ -15,7 +15,7 @@ def plan_list(request):
     if q:
         plans = plans.filter(
             Q(title__icontains=q)
-            | Q(description__icontains=q)
+            | Q(goal__icontains=q)
             | Q(current_markdown__icontains=q)
         )
 
@@ -98,3 +98,24 @@ def plan_restore_version(request, pk, version_id):
 def plan_overview(request, pk):
     plan = get_object_or_404(Plan, pk=pk)
     return render(request, "plans/plan_overview.html", {"plan": plan})
+
+@require_POST
+def workout_toggle_complete(request, pk):
+    workout = get_object_or_404(Workout, pk=pk)
+
+    if workout.is_completed:    
+        workout.mark_incomplete()
+    else:
+        workout.mark_complete()
+
+    workout.save()
+    return redirect("plans:workout_detail", pk=workout.pk)
+
+def workout_detail(request, pk):
+    workout = get_object_or_404(Workout, pk=pk)
+    return render(request, "plans/workout_detail.html", {"workout": workout})
+
+
+def training_block_detail(request, pk):
+    training_block = get_object_or_404(Block, pk=pk)
+    return render(request, "plans/block_detail.html", {"training_block": training_block, "DEBUG": "HIT_BLOCK_DETAIL"})

@@ -23,6 +23,24 @@
         {% endfor %}
     </p>
 
+    <hr>
+
+    <h2>Blocks</h2>
+
+    <ul>
+    {% for b in plan.blocks.all %}
+        <li>
+        <a href="{% url 'plans:block_detail' b.pk %}">
+            {{ b.title }}
+        </a>
+        — D+{{ b.start_offset_days }} ({{ b.duration_days }} days)
+        </li>
+    {% empty %}
+        <li>No blocks defined.</li>
+    {% endfor %}
+    </ul>
+
+
     <h2>Versions</h2>
 
     <ul>
