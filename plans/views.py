@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from .models import Plan, PlanVersion, Tag, Workout, Block
+from .models import Plan, PlanVersion, Tag, Workout, Block, WorkoutItem, WorkoutItemSession, WorkoutSet
 from .forms import PlanForm
 from django.views.decorators.http import require_POST
+from django.db import models
 
 
 
@@ -119,3 +120,41 @@ def workout_detail(request, pk):
 def training_block_detail(request, pk):
     training_block = get_object_or_404(Block, pk=pk)
     return render(request, "plans/block_detail.html", {"training_block": training_block, "DEBUG": "HIT_BLOCK_DETAIL"})
+
+
+@require_POST
+def start_item_session(request, item_id):
+    item = get_object_or_404(WorkoutItem, pk=item_id)
+    session = WorkoutItemSession.objects.create(workout_item=item)
+    return redirect("plans:item_session_detail", session_id=session.pk)
+
+def item_session_detail(request, session_id):
+    session = get_object_or_404(WorkoutItemSession, pk=session_id)
+    return render(request, "plans/item_session_detail.html", {"session": session})
+
+@require_POST
+def add_set_to_session(request, session_id):
+    session = get_object_or_404(WorkoutItemSession, pk=session_id)
+
+    # auto-increment order
+    next_order = (session.sets.aggregate(models.Max("order"))["order__max"] or 0) + 1
+
+    reps = request.POST.get("reps") or None
+    weight_kg = request.POST.get("weight_kg") or None
+    distance_m = request.POST.get("distance_m") or None
+    duration_sec = request.POST.get("duration_sec") or None
+    rest_sec = request.POST.get("rest_sec") or None
+    note = request.POST.get("note", "").strip()
+
+    WorkoutSet.objects.create(
+        session=session,
+        order=next_order,
+        reps=int(reps) if reps else None,
+        weight_kg=weight_kg if weight_kg else None,
+        distance_m=int(distance_m) if distance_m else None,
+        duration_sec=int(duration_sec) if duration_sec else None,
+        rest_sec=int(rest_sec) if rest_sec else None,
+        note=note,
+    )
+
+    return redirect("plans:item_session_detail", session_id=session.pk)

@@ -145,3 +145,48 @@ class WorkoutItem(models.Model):
 
     def __str__(self):
         return f"{self.workout.title} - {self.exercise.name}"
+
+
+class WorkoutItemSession(models.Model):
+    workout_item = models.ForeignKey(
+        WorkoutItem,
+        on_delete=models.CASCADE,
+        related_name="sessions",
+    )
+    performed_at = models.DateTimeField(auto_now_add=True)
+    note = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-performed_at"]
+
+    def __str__(self):
+        return f"{self.workout_item.exercise.name} session @ {self.performed_at:%Y-%m-%d}"
+
+
+class WorkoutSet(models.Model):
+    session = models.ForeignKey(
+        WorkoutItemSession,
+        on_delete=models.CASCADE,
+        related_name="sets",
+    )
+    order = models.PositiveIntegerField()
+
+    # Works for strength sets and cardio intervals
+    reps = models.PositiveIntegerField(null=True, blank=True)
+    weight_kg = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+
+    distance_m = models.PositiveIntegerField(null=True, blank=True)   # e.g. 400
+    duration_sec = models.PositiveIntegerField(null=True, blank=True) # e.g. 95
+    rest_sec = models.PositiveIntegerField(null=True, blank=True)
+    rir_or_rpe = models.PositiveIntegerField(null=True, blank=True)
+
+    note = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["order"]
+        constraints = [
+            models.UniqueConstraint(fields=["session", "order"], name="uniq_set_order_per_session")
+        ]
+
+    def __str__(self):
+        return f"Set {self.order}"
