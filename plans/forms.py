@@ -23,7 +23,8 @@ class PlanForm(forms.ModelForm):
 
     class Meta:
         model = Plan
-        fields = ["title", "description", "tags", "current_markdown"]
+        fields = ["title", "goal", "start_date", "duration_days", "targets", "current_markdown"]
+
         
 
     def __init__(self, *args, **kwargs):

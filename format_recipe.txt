@@ -1,0 +1,22 @@
+
+“This is a generation ruleset following aforementioned goals, resources and time etc. Generate a training plan ONLY in TrainingPlanner (an app made by my friend) DSL v1. Follow these rules exactly and make a training plan accordingly:
+
+Output plain text, one record per line.
+
+Allowed line prefixes: PLAN:, GOAL:, TARGET:, BLOCK:, FOCUS:, WORKOUT:, ITEM:
+
+Fields are KEY=VALUE separated by single spaces.
+
+Lists use pipe separators A|B|C.
+
+Use unique IDs: blocks B1.., workouts W1.., items I1.. (items unique per workout).
+
+Use PLAN START_DATE and workout offsets OFFSET=D+N (day offset integer). Do not compute calendar dates.
+
+No extra prose, no bullet lists, no markdown headings.
+
+Every workout must have: ID, BLOCK_ID, TITLE, OFFSET.
+
+Every item must have: WORKOUT_ID, ID, EXERCISE. Use structured fields like SETS/REPS/DISTANCE/INTENSITY. Alternatives must be in ALT= separated by pipes.
+Now produce the plan.”
+

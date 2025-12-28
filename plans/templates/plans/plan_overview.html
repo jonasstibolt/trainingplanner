@@ -1,0 +1,32 @@
+{% load markdown_extras %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ plan.title }} — Overview</title>
+    <style>
+      body { max-width: 900px; margin: 2rem auto; font-family: system-ui, sans-serif; }
+      pre { padding: 1rem; overflow-x: auto; }
+      code, pre { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>{{ plan.title }}</h1>
+
+    <p>
+      {% for t in plan.tags.all %}
+        <span style="border:1px solid #ccc; padding:2px 8px; border-radius:12px; margin-right:6px;">
+          {{ t.name }}
+        </span>
+      {% empty %}
+        <em>No tags</em>
+      {% endfor %}
+    </p>
+
+    <hr>
+
+    <div>
+      {{ plan.current_markdown|render_markdown }}
+    </div>
+    <a href="{% url 'plans:plan_list' %}">Back to list</a>
+</body>
+</html>
