@@ -1,0 +1,56 @@
+{% extends "plans/base.html" %}
+{% block title %}{{ workout.title }}{% endblock %}
+{% block content %}
+
+<h1>{{ workout.title }}</h1>
+
+<p>
+  Block: {{ workout.block.title }}<br>
+  Plan: {{ workout.block.plan.title }}<br>
+  Scheduled: D+{{ workout.offset_days }}
+</p>
+
+<p>
+  Status:
+  {% if workout.is_completed %}
+    ✅ Completed ({{ workout.completed_at|date:"Y-m-d H:i" }})
+  {% else %}
+    ⏳ Not completed
+  {% endif %}
+</p>
+
+<form method="post" action="{% url 'plans:workout_toggle_complete' workout.pk %}">
+  {% csrf_token %}
+  {% if workout.is_completed %}
+    <button type="submit">Undo completion</button>
+  {% else %}
+    <button type="submit">Mark completed</button>
+  {% endif %}
+</form>
+
+<hr>
+
+<h2>Items</h2>
+<ul>
+  {% for item in workout.items.all %}
+    <li>
+      <strong>{{ item.exercise.name }}</strong>
+      <form method="post" action="{% url 'plans:start_item_session' item.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit">Start session</button>
+      </form> 
+
+      {% if item.sets %} — {{ item.sets }} sets{% endif %}
+      {% if item.reps %} x {{ item.reps }} reps{% endif %}
+      {% if item.distance %} — {{ item.distance }}{% endif %}
+      {% if item.duration_min %} — {{ item.duration_min }} min{% endif %}
+      {% if item.intensity %} — {{ item.intensity }}{% endif %}
+      {% if item.rest_sec %} — rest {{ item.rest_sec }}s{% endif %}
+      {% if item.note %}<br><em>{{ item.note }}</em>{% endif %}
+    </li>
+  {% empty %}
+    <li>No items</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

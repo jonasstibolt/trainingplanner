@@ -1,0 +1,38 @@
+{% extends "plans/base.html" %}
+{% block title %}{{ training_block.title }}{% endblock %}
+{% block content %}
+
+<h1>{{ training_block.title }}</h1>
+<p>
+  Plan: {{ training_block.plan.title }}<br>
+  Offset: D+{{ training_block.start_offset_days }}<br>
+  Duration: {{ training_block.duration_days }} days<br>
+  Repeat: {{ training_block.repeat }}
+</p>
+
+<p>
+  Focus:
+  {% for f in training_block.foci.all %}
+    <span>{{ f.name }}</span>
+  {% empty %}
+    <em>none</em>
+  {% endfor %}
+</p>
+
+<hr>
+
+<h2>Workouts</h2>
+<ul>
+  {% for w in training_block.workouts.all %}
+    <li>
+      <a href="{% url 'plans:workout_detail' w.pk %}">
+        D+{{ w.offset_days }} — {{ w.title }}
+      </a>
+      {% if w.is_completed %} ✅ {% endif %}
+    </li>
+  {% empty %}
+    <li>No workouts</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

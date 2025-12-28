@@ -1,0 +1,48 @@
+{% extends "plans/base.html" %}
+{% block title %}Session{% endblock %}
+{% block content %}
+
+<h1>{{ session.workout_item.exercise.name }}</h1>
+
+<p>
+  Workout: <a href="{% url 'plans:workout_detail' session.workout_item.workout.pk %}">{{ session.workout_item.workout.title }}</a>
+</p>
+
+<h2>Add set / interval</h2>
+
+<form method="post" action="{% url 'plans:add_set_to_session' session.pk %}">
+  {% csrf_token %}
+  <p>
+    Reps: <input name="reps" type="number" min="0">
+    Weight (kg): <input name="weight_kg" type="number" step="0.25" min="0">
+  </p>
+  <p>
+    Distance (m): <input name="distance_m" type="number" min="0">
+    Duration (sec): <input name="duration_sec" type="number" min="0">
+    Rest (sec): <input name="rest_sec" type="number" min="0">
+  </p>
+  <p>
+    Note: <input name="note" type="text">
+  </p>
+  <button type="submit">Add</button>
+</form>
+
+<hr>
+
+<h2>Logged sets</h2>
+<ol>
+  {% for s in session.sets.all %}
+    <li>
+      {% if s.reps %}{{ s.reps }} reps{% endif %}
+      {% if s.weight_kg %} @ {{ s.weight_kg }} kg{% endif %}
+      {% if s.distance_m %} — {{ s.distance_m }} m{% endif %}
+      {% if s.duration_sec %} — {{ s.duration_sec }} sec{% endif %}
+      {% if s.rest_sec %} — rest {{ s.rest_sec }} sec{% endif %}
+      {% if s.note %}<br><em>{{ s.note }}</em>{% endif %}
+    </li>
+  {% empty %}
+    <li>No sets yet.</li>
+  {% endfor %}
+</ol>
+
+{% endblock %}
