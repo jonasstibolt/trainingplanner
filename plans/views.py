@@ -158,3 +158,17 @@ def add_set_to_session(request, session_id):
     )
 
     return redirect("plans:item_session_detail", session_id=session.pk)
+
+@require_POST
+def delete_set(request, set_id):
+    s = get_object_or_404(WorkoutSet, pk=set_id)
+    session_id = s.session_id
+    s.delete()
+    return redirect("plans:item_session_detail", session_id=session_id)
+
+@require_POST
+def delete_session(request, session_id):
+    session = get_object_or_404(WorkoutItemSession, pk=session_id)
+    workout_id = session.workout_item.workout_id
+    session.delete()
+    return redirect("plans:workout_detail", pk=workout_id)

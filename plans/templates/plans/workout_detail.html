@@ -39,6 +39,14 @@
         {% csrf_token %}
         <button type="submit">Start session</button>
       </form> 
+      {% with last_session=item.sessions.first %}
+        {% if last_session %}
+          <a href="{% url 'plans:item_session_detail' last_session.pk %}">Continue last session</a>
+          ({{ last_session.performed_at|date:"Y-m-d H:i" }})
+        {% endif %}
+      {% endwith %}
+      
+
 
       {% if item.sets %} — {{ item.sets }} sets{% endif %}
       {% if item.reps %} x {{ item.reps }} reps{% endif %}
@@ -47,6 +55,7 @@
       {% if item.intensity %} — {{ item.intensity }}{% endif %}
       {% if item.rest_sec %} — rest {{ item.rest_sec }}s{% endif %}
       {% if item.note %}<br><em>{{ item.note }}</em>{% endif %}
+      
     </li>
   {% empty %}
     <li>No items</li>

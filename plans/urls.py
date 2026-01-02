@@ -16,5 +16,7 @@ urlpatterns = [
     path("sessions/<int:session_id>/", views.item_session_detail, name="item_session_detail"),
     path("sessions/<int:session_id>/add-set/", views.add_set_to_session, name="add_set_to_session"),
     path("<int:pk>/", views.plan_detail, name="plan_detail"),
+    path("sets/<int:set_id>/delete/", views.delete_set, name="delete_set"),
+    path("sessions/<int:session_id>/delete/", views.delete_session, name="delete_session"),
 
 ]

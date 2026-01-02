@@ -7,6 +7,14 @@
 <p>
   Workout: <a href="{% url 'plans:workout_detail' session.workout_item.workout.pk %}">{{ session.workout_item.workout.title }}</a>
 </p>
+<p><a href="{% url 'plans:workout_detail' session.workout_item.workout.pk %}">Done / back to workout</a></p>
+
+<form method="post" action="{% url 'plans:delete_session' session.pk %}" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit">Delete session</button>
+</form>
+
+
 
 <h2>Add set / interval</h2>
 
@@ -39,6 +47,11 @@
       {% if s.duration_sec %} — {{ s.duration_sec }} sec{% endif %}
       {% if s.rest_sec %} — rest {{ s.rest_sec }} sec{% endif %}
       {% if s.note %}<br><em>{{ s.note }}</em>{% endif %}
+      <form method="post" action="{% url 'plans:delete_set' s.pk %}" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit">Delete</button>
+</form>
+
     </li>
   {% empty %}
     <li>No sets yet.</li>

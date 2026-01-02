@@ -14,3 +14,4 @@ TODO:
 
 -   mark_completion on workout with or without having followed the workout to a T, or having done adjustments to weights, reps, RIR, whatever
 
+-   Auto-fill in of WorkoutSessions

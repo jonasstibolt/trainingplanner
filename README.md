@@ -2,15 +2,8 @@
 
 A local-first training plan manager built with Django.
 
-Plans are written in Markdown, versioned automatically on edit,
-and can be restored safely. Designed to work well with LLM-generated
-training plans and manual editing.
+Use LLMs to generate a standardized training plan which can be uploaded to visualize, edit, and record further input.
 
-## Core ideas
-- Markdown is the source of truth
-- Plans are versioned on change
-- Restores are reversible
-- Offline-first, no cloud required
 
 ## Running locally
 ```bash
