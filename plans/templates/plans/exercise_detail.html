@@ -1,0 +1,57 @@
+{% extends "plans/base.html" %}
+{% block title %}{{ exercise.name }}{% endblock %}
+{% block content %}
+
+<h1>{{ exercise.name }}</h1>
+
+{% if exercise.is_unsorted %}
+  <p><em>This exercise is unsorted (auto-created). Consider renaming/merging later.</em></p>
+{% endif %}
+
+<hr>
+
+<h2>History</h2>
+
+<ul>
+  {% for session in sessions %}
+    <li>
+      <strong>{{ session.performed_at|date:"Y-m-d H:i" }}</strong>
+      — Workout:
+      <a href="{% url 'plans:workout_detail' session.workout_item.workout.pk %}">
+        {{ session.workout_item.workout.title }}
+      </a>
+      — <a href="{% url 'plans:item_session_detail' session.pk %}">open session</a>
+
+      <ol>
+        {% for s in session.sets.all %}
+          <li>
+            {% if s.reps %}{{ s.reps }} reps{% endif %}
+            {% if s.weight_kg %} @ {{ s.weight_kg }} kg{% endif %}
+            {% if s.distance_m %} — {{ s.distance_m }} m{% endif %}
+            {% if s.duration_sec %} — {{ s.duration_sec }} sec{% endif %}
+            {% if s.rest_sec %} — rest {{ s.rest_sec }} sec{% endif %}
+            {% if s.note %}<br><em>{{ s.note }}</em>{% endif %}
+          </li>
+        {% empty %}
+          <li>No sets</li>
+        {% endfor %}
+      </ol>
+    </li>
+  {% empty %}
+    <li>No history yet.</li>
+  {% endfor %}
+</ul>
+
+{% if exercise.is_unsorted %}
+  <hr>
+  <p>ADMIN FUNCTION - DO NOT TOUCH</p>
+  <form method="post" action="{% url 'plans:merge_exercises_from_form' exercise.pk %}">
+  {% csrf_token %}
+  <input name="target_id" placeholder="Target exercise ID">
+  <button type="submit">Merge</button>
+</form>
+
+{% endif %}
+
+
+{% endblock %}

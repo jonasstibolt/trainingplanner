@@ -34,7 +34,8 @@
 <ul>
   {% for item in workout.items.all %}
     <li>
-      <strong>{{ item.exercise.name }}</strong>
+      <a href="{% url 'plans:exercise_detail' item.exercise.pk %}">{{ item.exercise.name }}</a>
+
       <form method="post" action="{% url 'plans:start_item_session' item.pk %}" style="display:inline;">
         {% csrf_token %}
         <button type="submit">Start session</button>

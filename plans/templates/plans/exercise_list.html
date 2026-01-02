@@ -1,0 +1,25 @@
+{% extends "plans/base.html" %}
+{% block title %}Exercises{% endblock %}
+{% block content %}
+
+<h1>Exercises</h1>
+
+<form method="get">
+  <input name="q" value="{{ q }}" placeholder="Search exercises…">
+  <button type="submit">Search</button>
+</form>
+
+<hr>
+
+<ul>
+  {% for e in exercises %}
+    <li>
+      <a href="{% url 'plans:exercise_detail' e.pk %}">{{ e.name }}</a>
+      {% if e.is_unsorted %}<em> (unsorted)</em>{% endif %}
+    </li>
+  {% empty %}
+    <li>No exercises.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

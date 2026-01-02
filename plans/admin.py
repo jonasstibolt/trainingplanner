@@ -53,9 +53,13 @@ class WorkoutItemAdmin(admin.ModelAdmin):
 
 @admin.register(Exercise)
 class ExerciseAdmin(admin.ModelAdmin):
-    list_display = ("name", "is_unsorted")
+    list_display = ("exercise_id", "name", "is_unsorted")
     list_filter = ("is_unsorted",)
     search_fields = ("name",)
+
+    @admin.display(description="exercise_id")
+    def exercise_id(self, obj):
+        return obj.id
 
 
 @admin.register(Tag)

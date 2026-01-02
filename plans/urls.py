@@ -18,5 +18,8 @@ urlpatterns = [
     path("<int:pk>/", views.plan_detail, name="plan_detail"),
     path("sets/<int:set_id>/delete/", views.delete_set, name="delete_set"),
     path("sessions/<int:session_id>/delete/", views.delete_session, name="delete_session"),
-
+    path("exercises/<int:pk>/", views.exercise_detail, name="exercise_detail"),
+    path("exercises/", views.exercise_list, name="exercise_list"),
+    path("exercises/<int:source_id>/merge/",views.merge_exercises_from_form, name="merge_exercises_from_form"),
+    
 ]

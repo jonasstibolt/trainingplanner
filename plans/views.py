@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
-from .models import Plan, PlanVersion, Tag, Workout, Block, WorkoutItem, WorkoutItemSession, WorkoutSet
+from .models import Plan, PlanVersion, Tag, Workout, Block, WorkoutItem, WorkoutItemSession, WorkoutSet, Exercise
 from .forms import PlanForm
 from django.views.decorators.http import require_POST
-from django.db import models
+from django.db import models, transaction
 
 
 
@@ -172,3 +172,62 @@ def delete_session(request, session_id):
     workout_id = session.workout_item.workout_id
     session.delete()
     return redirect("plans:workout_detail", pk=workout_id)
+
+def exercise_detail(request, pk):
+    exercise = get_object_or_404(Exercise, pk=pk)
+
+    if request.method == "POST" and exercise.is_unsorted:
+        target_id = request.POST.get("target_id")
+        return redirect("plans:merge_exercises", source_id=exercise.pk, target_id=target_id)
+
+    sessions = (
+        WorkoutItemSession.objects
+        .filter(workout_item__exercise=exercise)
+        .select_related("workout_item__workout")
+        .prefetch_related("sets")
+    )
+
+    return render(request, "plans/exercise_detail.html", {
+        "exercise": exercise,
+        "sessions": sessions,
+    })
+
+
+def exercise_list(request):
+    q = request.GET.get("q", "").strip()
+    exercises = Exercise.objects.all()
+
+    if q:
+        exercises = exercises.filter(name__icontains=q)
+
+    exercises = exercises.order_by("name")
+
+    return render(request, "plans/exercise_list.html", {
+        "exercises": exercises,
+        "q": q,
+    })
+
+@require_POST
+def merge_exercises(request, source_id, target_id):
+    if source_id == target_id:
+        return redirect("plans:exercise_detail", pk=target_id)
+
+    source = get_object_or_404(Exercise, pk=source_id)
+    target = get_object_or_404(Exercise, pk=target_id)
+
+    with transaction.atomic():
+        # move all workout items
+        WorkoutItem.objects.filter(exercise=source).update(exercise=target)
+
+        # optional: keep canonical flags clean
+        if source.is_unsorted and not target.is_unsorted:
+            pass
+
+        source.delete()
+
+    return redirect("plans:exercise_detail", pk=target.pk)
+
+@require_POST
+def merge_exercises_from_form(request, source_id):
+    target_id = int(request.POST["target_id"])
+    return merge_exercises(request, source_id=source_id, target_id=target_id)
