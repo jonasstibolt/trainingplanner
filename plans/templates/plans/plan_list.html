@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "plans/base.html" %}
 
 {% block title %}Plans · Training Planner{% endblock %}
 
@@ -6,41 +6,42 @@
   <div class="flex items-start justify-between gap-4">
     <div>
       <h1 class="h1">Plans</h1>
-      <p class="muted">Your training plans and blocks.</p>
+      <p class="muted">Create, review, and log your training plans.</p>
     </div>
 
-    <a class="btn-primary" href="{% url 'plans:plan_create' %}">Create plan</a>
+    <a class="btn-primary" href="{% url 'plans:plan_create' %}">New plan</a>
   </div>
 
   <div class="mt-6 grid gap-3">
     {% if plans %}
       {% for plan in plans %}
-        <a
-          class="card card-hover block"
-          href="{% url 'plans:plan_detail' plan.pk %}"
-        >
+        <div class="card card-hover">
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
-              <div class="truncate text-base font-semibold">
+              <div class="truncate text-lg font-semibold tracking-tight">
                 {{ plan.name|default:plan.title|default:"Untitled plan" }}
               </div>
-              <div class="muted mt-1">
-                Created {{ plan.created_at|date:"Y-m-d" }}
-              </div>
+
+              {% if plan.created_at %}
+                <div class="muted mt-1">Created {{ plan.created_at|date:"Y-m-d" }}</div>
+              {% endif %}
             </div>
 
             <div class="flex shrink-0 items-center gap-2">
-              <span class="rounded-full bg-zinc-100 px-2 py-1 text-xs text-zinc-700">
-                View
-              </span>
+              <a class="btn-secondary" href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
+              <a class="btn-primary" href="{% url 'plans:plan_overview' plan.pk %}">Overview</a>
             </div>
           </div>
-        </a>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            <a class="btn-ghost" href="{% url 'plans:plan_detail' plan.pk %}">Details</a>
+          </div>
+        </div>
       {% endfor %}
     {% else %}
       <div class="card">
         <h2 class="text-base font-semibold">No plans yet</h2>
-        <p class="muted mt-1">Create your first plan and start logging workouts.</p>
+        <p class="muted mt-1">Make your first plan, then you can log workouts set-by-set.</p>
         <div class="mt-4">
           <a class="btn-primary" href="{% url 'plans:plan_create' %}">Create plan</a>
         </div>

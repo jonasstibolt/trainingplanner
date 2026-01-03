@@ -4,6 +4,25 @@
   .container-app {
     @apply mx-auto w-full max-w-5xl px-4;
   }
+  
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl
+           px-4 py-2 text-sm font-medium transition
+           bg-zinc-900 text-white hover:bg-zinc-800;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl
+           px-4 py-2 text-sm font-medium transition
+           bg-zinc-100 text-zinc-900 hover:bg-zinc-200;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-xl
+           px-3 py-2 text-sm font-medium transition
+           text-zinc-700 hover:bg-zinc-100;
+  }
 
   .card {
     @apply rounded-2xl bg-white p-4 shadow-sm ring-1 ring-zinc-900/5;
@@ -19,22 +38,6 @@
 
   .muted {
     @apply text-sm text-zinc-500;
-  }
-
-  .btn {
-    @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition;
-  }
-
-  .btn-primary {
-    @apply btn bg-zinc-900 text-white hover:bg-zinc-800;
-  }
-
-  .btn-secondary {
-    @apply btn bg-zinc-100 text-zinc-900 hover:bg-zinc-200;
-  }
-
-  .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100;
   }
 
   .input {
