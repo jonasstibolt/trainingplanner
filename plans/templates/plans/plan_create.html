@@ -2,12 +2,20 @@
 
 {% block title %}New plan · Training Planner{% endblock %}
 
+
 {% block content %}
   <div class="flex items-start justify-between gap-4">
     <div>
       <h1 class="h1">New plan</h1>
       <p class="muted">Create a training plan to generate blocks and workouts.</p>
+      <p class="muted mt-2">
+        Need help? <a class="underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-500"
+        href="{% url 'plans:how_to_create_plan' %}">
+        See the copy-paste format</a>
+      </p>
     </div>
+
+
 
     <a class="btn-ghost" href="{% url 'plans:plan_list' %}">Cancel</a>
   </div>

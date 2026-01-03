@@ -5,21 +5,61 @@ from .forms import PlanForm
 from django.views.decorators.http import require_POST
 from django.db import models, transaction
 from datetime import date, timedelta
+from django.utils import timezone
+
+from datetime import date, timedelta
+from django.utils import timezone
 
 def home(request):
     active_plan = Plan.objects.filter(is_active=True).first()
 
     today = date.today()
-    ctx = {
+    yesterday = today - timedelta(days=1)
+    tomorrow = today + timedelta(days=1)
+
+    def label(d: date) -> str:
+        return d.strftime("%A · %Y-%m-%d")
+
+    def planned_workouts_for_day(plan: Plan, d: date):
+        if not plan:
+            return []
+
+        offset = (d - plan.start_date).days
+
+        # If the date is before plan start, show nothing (keep placeholders)
+        if offset < 0:
+            return []
+
+        workouts = (
+            Workout.objects
+            .filter(block__plan=plan, offset_days=offset)
+            .select_related("block", "block__plan")
+            .order_by("id")
+        )
+
+        items = []
+        for w in workouts:
+            items.append({
+                "title": w.title,
+                "meta": f"{w.block.title} · D+{w.offset_days}" + (" · ✅ Completed" if w.is_completed else ""),
+                "href": f"/plans/workouts/{w.pk}/",  # or use reverse if you prefer
+            })
+        return items
+
+    # Planned workouts (the key change)
+    yesterday_items = planned_workouts_for_day(active_plan, yesterday)
+    today_items = planned_workouts_for_day(active_plan, today)
+    tomorrow_items = planned_workouts_for_day(active_plan, tomorrow)
+
+    return render(request, "plans/home.html", {
         "active_plan": active_plan,
-        "yesterday_label": (today - timedelta(days=1)).strftime("%A · %Y-%m-%d"),
-        "today_label": today.strftime("%A · %Y-%m-%d"),
-        "tomorrow_label": (today + timedelta(days=1)).strftime("%A · %Y-%m-%d"),
-        "yesterday_items": [],
-        "today_items": [],
-        "tomorrow_items": [],
-    }
-    return render(request, "plans/home.html", ctx)
+        "yesterday_label": label(yesterday),
+        "today_label": label(today),
+        "tomorrow_label": label(tomorrow),
+        "yesterday_items": yesterday_items,
+        "today_items": today_items,
+        "tomorrow_items": tomorrow_items,
+    })
 
 
 def plan_list(request):
@@ -104,6 +144,10 @@ def plan_create(request):
         form = PlanForm()
 
     return render(request, "plans/plan_create.html", {"form": form})
+
+def how_to_create_plan(request):
+    return render(request, "plans/how_to_create_plan.html")
+
 
 @require_POST
 def plan_restore_version(request, pk, version_id):

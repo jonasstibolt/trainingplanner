@@ -24,4 +24,4 @@ TODO:
 
 -   Fix home url
 
-
+-   In the plan overview and homepage, show how many days along you are and how many you got left in the plan and in the block
