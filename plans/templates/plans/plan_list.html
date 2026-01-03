@@ -1,49 +1,50 @@
-{% extends "plans/base.html" %}
-{% block title %}Plans{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Plans · Training Planner{% endblock %}
+
 {% block content %}
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="h1">Plans</h1>
+      <p class="muted">Your training plans and blocks.</p>
+    </div>
 
+    <a class="btn-primary" href="{% url 'plans:plan_create' %}">Create plan</a>
+  </div>
 
-    <h1>Training Plans</h1>
+  <div class="mt-6 grid gap-3">
+    {% if plans %}
+      {% for plan in plans %}
+        <a
+          class="card card-hover block"
+          href="{% url 'plans:plan_detail' plan.pk %}"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <div class="truncate text-base font-semibold">
+                {{ plan.name|default:plan.title|default:"Untitled plan" }}
+              </div>
+              <div class="muted mt-1">
+                Created {{ plan.created_at|date:"Y-m-d" }}
+              </div>
+            </div>
 
-    <form method="get">
-        <input type="text" name="q" placeholder="Search..." value="{{ q }}">
-
-        <fieldset>
-            <legend>Tags</legend>
-
-            {% for t in tags %}
-                <label style="display:inline-block; margin-right: 10px;">
-                    <input
-                        type="checkbox"
-                        name="tags"
-                        value="{{ t.name }}"
-                        {% if t.name in selected_tags %}checked{% endif %}
-                    >
-                    {{ t.name }}
-                </label>
-            {% endfor %}
-        </fieldset>
-
-        <button type="submit">Filter</button>
-
-        {% if q or selected_tags %}
-            <a href="{% url 'plans:plan_list' %}">Clear</a>
-        {% endif %}
-    </form>
-
-    <hr>
-
-
-    <ul>
-        {% for plan in plans %}
-        <li>
-        <a href="{% url 'plans:plan_detail' plan.pk %}">
-            {{ plan.title }}
-            {{ plan.description }}
+            <div class="flex shrink-0 items-center gap-2">
+              <span class="rounded-full bg-zinc-100 px-2 py-1 text-xs text-zinc-700">
+                View
+              </span>
+            </div>
+          </div>
         </a>
-        </li>
-        {% empty %}
-            <li>No plans yet.</li>
-        {% endfor %}
-    </ul>
+      {% endfor %}
+    {% else %}
+      <div class="card">
+        <h2 class="text-base font-semibold">No plans yet</h2>
+        <p class="muted mt-1">Create your first plan and start logging workouts.</p>
+        <div class="mt-4">
+          <a class="btn-primary" href="{% url 'plans:plan_create' %}">Create plan</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

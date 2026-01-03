@@ -1,19 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{% block title %}Training Planner{% endblock %}</title>
+  {% load static %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <title>{% block title %}Training Planner{% endblock %}</title>
 </head>
-<body>
-    <nav>
-        <a href="{% url 'plans:plan_list' %}">Plans</a>
-        |
-        <a href="{% url 'plans:plan_create' %}">New plan</a>
-        |
-        <a href="{% url 'plans:exercise_list' %}">Exercises</a>
-    </nav>
 
-    <hr>
+<body class="min-h-screen bg-zinc-50 text-zinc-900 antialiased">
+  <header class="sticky top-0 z-50 border-b border-zinc-200 bg-zinc-50/80 backdrop-blur">
+    <div class="container-app flex items-center justify-between py-3">
+      <a href="{% url 'plans:plan_list' %}" class="flex items-center gap-2 font-semibold tracking-tight">
+        <span class="grid h-9 w-9 place-items-center rounded-2xl bg-zinc-900 text-white">TP</span>
+        <span>Training Planner</span>
+      </a>
 
+      <nav class="flex items-center gap-1">
+        <a class="btn-ghost" href="{% url 'plans:plan_list' %}">Plans</a>
+        <a class="btn-ghost" href="{% url 'plans:exercise_list' %}">Exercises</a>
+        <a class="btn-primary" href="{% url 'plans:plan_create' %}">New plan</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container-app py-6">
     {% block content %}{% endblock %}
+  </main>
 </body>
 </html>
