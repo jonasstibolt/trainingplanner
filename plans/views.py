@@ -12,9 +12,9 @@ def home(request):
     today = date.today()
     ctx = {
         "active_plan": active_plan,
-        "yesterday_label": (today - timedelta(days=1)).isoformat(),
-        "today_label": today.isoformat(),
-        "tomorrow_label": (today + timedelta(days=1)).isoformat(),
+        "yesterday_label": (today - timedelta(days=1)).strftime("%A · %Y-%m-%d"),
+        "today_label": today.strftime("%A · %Y-%m-%d"),
+        "tomorrow_label": (today + timedelta(days=1)).strftime("%A · %Y-%m-%d"),
         "yesterday_items": [],
         "today_items": [],
         "tomorrow_items": [],
