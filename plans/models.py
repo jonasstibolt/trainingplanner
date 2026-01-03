@@ -28,6 +28,8 @@ class Plan(models.Model):
     start_date = models.DateField()
     duration_days = models.PositiveIntegerField(default=84)
 
+    is_active = models.BooleanField(default=False)
+
     targets = models.ManyToManyField(
         Tag,
         blank=True,

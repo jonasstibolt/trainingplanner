@@ -17,3 +17,9 @@ TODO:
 -   Auto-fill in of WorkoutSessions
 
 -   If tag = Endurance, automatically adjust the exercise logging to accomodate and not show reps etc. ofc vice versa with strength etc
+
+-   Sprogindstilling (DA/EN)
+
+-   Overview is to be a clear timeline with specific dates with WorkoutSessions that can be clicked
+
+

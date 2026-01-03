@@ -1,68 +1,67 @@
 {% extends "plans/base.html" %}
 
-{% load markdown_extras %}
-{% block title %}{{ plan.title }}{% endblock %}
+{% block title %}{{ plan.title|default:plan.title }} · Plan{% endblock %}
+
 {% block content %}
-    <p>
-    <a href="{% url 'plans:plan_overview' plan.pk %}">Overview</a>
-    </p>
+  <div class="flex items-start justify-between gap-4">
+    <div class="min-w-0">
+      <h1 class="h1 truncate">{{ plan.title|default:plan.title|default:"Untitled plan" }}</h1>
 
-    <h1>{{ plan.title }}</h1>
-
-    <div>
-    {{ plan.current_markdown|render_markdown }}
+      <p class="muted mt-2">
+        {% if plan.goal %}
+          {{ plan.goal }}
+        {% else %}
+          <span class="italic text-zinc-400">No description yet.</span>
+        {% endif %}
+      </p>
     </div>
 
+    <div class="flex items-center gap-2">
+      <a class="btn-secondary" href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
+      <a class="btn-primary" href="{% url 'plans:plan_overview' plan.pk %}">Overview</a>
+    </div>
+  </div>
 
-    <p>
-        Tags:
-        {% for tag in plan.tags.all %}
-            {{ tag.name }}
+  <div class="mt-6 grid gap-3">
+    <div class="card">
+      <div class="text-sm font-semibold">Plan info</div>
+      <div class="mt-3 grid gap-1 text-sm">
+        {% if plan.created_at %}
+          <div><span class="text-zinc-500">Created:</span> {{ plan.created_at|date:"Y-m-d H:i" }}</div>
+        {% endif %}
+        {% if plan.updated_at %}
+          <div><span class="text-zinc-500">Updated:</span> {{ plan.updated_at|date:"Y-m-d H:i" }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div class="text-sm font-semibold">Blocks</div>
+          <div class="muted mt-1">Open a block to view workouts.</div>
+        </div>
+      </div>
+
+      <div class="mt-4 grid gap-2">
+        {% for b in blocks %}
+          <a class="block rounded-xl bg-zinc-50 px-3 py-3 hover:bg-zinc-100"
+             href="{% url 'plans:block_detail' b.pk %}">
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <div class="truncate font-semibold">{{ b.title }}</div>
+                <div class="muted mt-1 text-xs">
+                  {% if b.start_offset_days is not None %}D+{{ b.start_offset_days }}{% endif %}
+                  {% if b.duration_days %} · {{ b.duration_days }} days{% endif %}
+                </div>
+              </div>
+              <span class="text-xs text-zinc-500">Open</span>
+            </div>
+          </a>
         {% empty %}
-            none
+          <div class="muted">No blocks yet.</div>
         {% endfor %}
-    </p>
-
-    <hr>
-
-    <h2>Blocks</h2>
-
-    <ul>
-    {% for b in plan.blocks.all %}
-        <li>
-        <a href="{% url 'plans:block_detail' b.pk %}">
-            {{ b.title }}
-        </a>
-        — D+{{ b.start_offset_days }} ({{ b.duration_days }} days)
-        </li>
-    {% empty %}
-        <li>No blocks defined.</li>
-    {% endfor %}
-    </ul>
-
-
-    <h2>Versions</h2>
-
-    <ul>
-        {% for v in versions %}
-            <li>
-                {{ v.created_at }} — {{ v.note }}
-
-                <form method="post" action="{% url 'plans:plan_restore_version' plan.pk v.pk %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Restore</button>
-                </form>
-            </li>
-        {% empty %}
-            <li>No versions yet.</li>
-        {% endfor %}
-    </ul>
-
-    <p>
-    <a href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
-    </p>
-
-    <a href="{% url 'plans:plan_list' %}">Back to list</a>
-</body>
+      </div>
+    </div>
+  </div>
 {% endblock %}
-

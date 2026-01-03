@@ -1,66 +1,104 @@
 {% extends "plans/base.html" %}
-{% block title %}{{ workout.title }}{% endblock %}
+{% block title %}{{ workout.title }} · Workout{% endblock %}
 {% block content %}
 
-<h1>{{ workout.title }}</h1>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="h1">{{ workout.title }}</h1>
+      <p class="muted">
+        {{ workout.block.title }} · D+{{ workout.offset_days }}
+      </p>
+    </div>
 
-<p>
-  Block: {{ workout.block.title }}<br>
-  Plan: {{ workout.block.plan.title }}<br>
-  Scheduled: D+{{ workout.offset_days }}
-</p>
-
-<p>
-  Status:
-  {% if workout.is_completed %}
-    ✅ Completed ({{ workout.completed_at|date:"Y-m-d H:i" }})
-  {% else %}
-    ⏳ Not completed
-  {% endif %}
-</p>
-
-<form method="post" action="{% url 'plans:workout_toggle_complete' workout.pk %}">
-  {% csrf_token %}
-  {% if workout.is_completed %}
-    <button type="submit">Undo completion</button>
-  {% else %}
-    <button type="submit">Mark completed</button>
-  {% endif %}
-</form>
-
-<hr>
-
-<h2>Items</h2>
-<ul>
-  {% for item in workout.items.all %}
-    <li>
-      <a href="{% url 'plans:exercise_detail' item.exercise.pk %}">{{ item.exercise.name }}</a>
-
-      <form method="post" action="{% url 'plans:start_item_session' item.pk %}" style="display:inline;">
+    <div class="flex items-center gap-2">
+      <form method="post" action="{% url 'plans:workout_toggle_complete' workout.pk %}">
         {% csrf_token %}
-        <button type="submit">Start session</button>
-      </form> 
-      {% with last_session=item.sessions.first %}
-        {% if last_session %}
-          <a href="{% url 'plans:item_session_detail' last_session.pk %}">Continue last session</a>
-          ({{ last_session.performed_at|date:"Y-m-d H:i" }})
+        {% if workout.is_completed %}
+          <button class="btn-secondary" type="submit">Undo</button>
+        {% else %}
+          <button class="btn-primary" type="submit">Mark complete</button>
         {% endif %}
-      {% endwith %}
-      
+      </form>
+
+      <a class="btn-ghost" href="{% url 'plans:block_detail' workout.block.pk %}">Back</a>
+    </div>
+  </div>
+
+  <div class="card mt-6">
+    <div class="grid gap-1 text-sm">
+      <div><span class="text-zinc-500">Plan:</span> {{ workout.block.plan.title }}</div>
+      <div>
+        <span class="text-zinc-500">Status:</span>
+        {% if workout.is_completed %}
+          ✅ Completed ({{ workout.completed_at|date:"Y-m-d H:i" }})
+        {% else %}
+          ⏳ Not completed
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex items-end justify-between gap-4">
+    <div>
+      <h2 class="text-lg font-semibold tracking-tight">Items</h2>
+      <p class="muted mt-1">Start a session per exercise.</p>
+    </div>
+  </div>
+
+  <div class="mt-3 grid gap-3">
+    {% for item in workout.items.all %}
+      <div class="card">
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <a class="text-base font-semibold underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-500"
+               href="{% url 'plans:exercise_detail' item.exercise.pk %}">
+              {{ item.exercise.name }}
+            </a>
+
+            <div class="muted mt-2">
+              {% if item.sets %}{{ item.sets }} sets{% endif %}
+              {% if item.reps %} · {{ item.reps }} reps{% endif %}
+              {% if item.weight_kg %} · {{ item.weight_kg }} kg{% endif %}
+              {% if item.distance_m %} · {{ item.distance_m }} m{% endif %}
+              {% if item.duration_sec %} · {{ item.duration_sec }} sec{% endif %}
+              {% if item.rest_sec %} · rest {{ item.rest_sec }}s{% endif %}
+              {% if item.intensity %} · {{ item.intensity }}{% endif %}
+            </div>
 
 
-      {% if item.sets %} — {{ item.sets }} sets{% endif %}
-      {% if item.reps %} x {{ item.reps }} reps{% endif %}
-      {% if item.distance %} — {{ item.distance }}{% endif %}
-      {% if item.duration_min %} — {{ item.duration_min }} min{% endif %}
-      {% if item.intensity %} — {{ item.intensity }}{% endif %}
-      {% if item.rest_sec %} — rest {{ item.rest_sec }}s{% endif %}
-      {% if item.note %}<br><em>{{ item.note }}</em>{% endif %}
-      
-    </li>
-  {% empty %}
-    <li>No items</li>
-  {% endfor %}
-</ul>
+            {% if item.note %}
+              <div class="muted mt-2">{{ item.note }}</div>
+            {% endif %}
+          </div>
+
+          <div class="flex shrink-0 flex-col gap-2">
+            {% with last_session=item.sessions.first %}
+              {% if last_session %}
+                <a class="btn-primary w-full text-center" href="{% url 'plans:item_session_detail' last_session.pk %}">
+                  Continue
+                </a>
+                <div class="muted text-center text-xs">{{ last_session.performed_at|date:"Y-m-d H:i" }}</div>
+
+                <form method="post" action="{% url 'plans:start_item_session' item.pk %}">
+                  {% csrf_token %}
+                  <button class="btn-secondary w-full" type="submit">New session</button>
+                </form>
+              {% else %}
+                <form method="post" action="{% url 'plans:start_item_session' item.pk %}">
+                  {% csrf_token %}
+                  <button class="btn-primary w-full" type="submit">Start</button>
+                </form>
+              {% endif %}
+            {% endwith %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card">
+        <h2 class="text-base font-semibold">No items</h2>
+        <p class="muted mt-1">This workout has no exercises yet.</p>
+      </div>
+    {% endfor %}
+  </div>
 
 {% endblock %}

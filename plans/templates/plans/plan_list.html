@@ -15,28 +15,49 @@
   <div class="mt-6 grid gap-3">
     {% if plans %}
       {% for plan in plans %}
-        <div class="card card-hover">
-          <div class="flex items-start justify-between gap-4">
+        <div class="card card-hover relative">
+        <!-- Full-card click target -->
+        <a
+            href="{% url 'plans:plan_detail' plan.pk %}"
+            class="absolute inset-0 z-10"
+            aria-label="Open plan {{ plan.name|default:plan.title }}"
+        ></a>
+
+        <!-- Content should NOT intercept clicks -->
+        <div class="relative z-20 pointer-events-none">
+            <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
-              <div class="truncate text-lg font-semibold tracking-tight">
+                <div class="truncate text-lg font-semibold tracking-tight">
                 {{ plan.name|default:plan.title|default:"Untitled plan" }}
-              </div>
+                </div>
 
-              {% if plan.created_at %}
+                {% if plan.created_at %}
                 <div class="muted mt-1">Created {{ plan.created_at|date:"Y-m-d" }}</div>
-              {% endif %}
+                {% endif %}
             </div>
 
-            <div class="flex shrink-0 items-center gap-2">
-              <a class="btn-secondary" href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
-              <a class="btn-primary" href="{% url 'plans:plan_overview' plan.pk %}">Overview</a>
+            <!-- Buttons MUST be clickable -->
+            <div class="flex shrink-0 items-center gap-2 pointer-events-auto">
+                <a class="btn-secondary" href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
+                <a class="btn-primary" href="{% url 'plans:plan_overview' plan.pk %}">Overview</a>
             </div>
-          </div>
+            </div>
 
-          <div class="mt-4 flex flex-wrap gap-2">
-            <a class="btn-ghost" href="{% url 'plans:plan_detail' plan.pk %}">Details</a>
-          </div>
+            <div class="mt-2 text-sm text-zinc-600 line-clamp-2">
+                {% if plan.goal %}
+                    {{ plan.goal }}
+                {% else %}
+                    <span class="italic text-zinc-400">
+                    No description yet.
+                    </span>
+                {% endif %}
+            </div>
+
         </div>
+        </div>
+
+
+
       {% endfor %}
     {% else %}
       <div class="card">

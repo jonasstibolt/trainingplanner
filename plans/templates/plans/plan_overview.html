@@ -1,32 +1,32 @@
+{% extends "plans/base.html" %}
 {% load markdown_extras %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ plan.title }} — Overview</title>
-    <style>
-      body { max-width: 900px; margin: 2rem auto; font-family: system-ui, sans-serif; }
-      pre { padding: 1rem; overflow-x: auto; }
-      code, pre { background: #f4f4f4; }
-    </style>
-</head>
-<body>
-    <h1>{{ plan.title }}</h1>
 
-    <p>
-      {% for t in plan.tags.all %}
-        <span style="border:1px solid #ccc; padding:2px 8px; border-radius:12px; margin-right:6px;">
-          {{ t.name }}
-        </span>
-      {% empty %}
-        <em>No tags</em>
-      {% endfor %}
-    </p>
+{% block title %}{{ plan.title }} · Overview{% endblock %}
 
-    <hr>
-
+{% block content %}
+  <div class="flex items-start justify-between gap-4">
     <div>
+      <h1 class="h1">{{ plan.title }}</h1>
+      <p class="muted">Plan overview (rendered from markdown).</p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a class="btn-secondary" href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
+      <a class="btn-ghost" href="{% url 'plans:plan_list' %}">Back</a>
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    {% for t in plan.tags.all %}
+      <span class="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-700">{{ t.name }}</span>
+    {% empty %}
+      <span class="muted">No tags</span>
+    {% endfor %}
+  </div>
+
+  <div class="card mt-6">
+    <div class="prose prose-zinc max-w-none">
       {{ plan.current_markdown|render_markdown }}
     </div>
-    <a href="{% url 'plans:plan_list' %}">Back to list</a>
-</body>
-</html>
+  </div>
+{% endblock %}

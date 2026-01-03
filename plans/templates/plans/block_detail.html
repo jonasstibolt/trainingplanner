@@ -1,38 +1,58 @@
 {% extends "plans/base.html" %}
-{% block title %}{{ training_block.title }}{% endblock %}
+{% block title %}{{ training_block.title }} · Block{% endblock %}
 {% block content %}
 
-<h1>{{ training_block.title }}</h1>
-<p>
-  Plan: {{ training_block.plan.title }}<br>
-  Offset: D+{{ training_block.start_offset_days }}<br>
-  Duration: {{ training_block.duration_days }} days<br>
-  Repeat: {{ training_block.repeat }}
-</p>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="h1">{{ training_block.title }}</h1>
+      <p class="muted">D+{{ training_block.start_offset_days }} · {{ training_block.duration_days }} days</p>
+    </div>
+    <a class="btn-ghost" href="{% url 'plans:plan_detail' training_block.plan.pk %}">Back to plan</a>
+  </div>
 
-<p>
-  Focus:
-  {% for f in training_block.foci.all %}
-    <span>{{ f.name }}</span>
-  {% empty %}
-    <em>none</em>
-  {% endfor %}
-</p>
+  <div class="card mt-6">
+    <div class="grid gap-1 text-sm">
+      <div><span class="text-zinc-500">Plan:</span> {{ training_block.plan.title }}</div>
+      <div><span class="text-zinc-500">Repeat:</span> {{ training_block.repeat }}</div>
+    </div>
 
-<hr>
+    <div class="mt-4">
+      <div class="text-sm font-semibold">Focus</div>
+      <div class="mt-2 flex flex-wrap gap-2">
+        {% for f in training_block.foci.all %}
+          <span class="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-700">{{ f.name }}</span>
+        {% empty %}
+          <span class="muted">none</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 
-<h2>Workouts</h2>
-<ul>
-  {% for w in training_block.workouts.all %}
-    <li>
-      <a href="{% url 'plans:workout_detail' w.pk %}">
-        D+{{ w.offset_days }} — {{ w.title }}
+  <div class="mt-6">
+    <h2 class="text-lg font-semibold tracking-tight">Workouts</h2>
+  </div>
+
+  <div class="mt-3 grid gap-2">
+    {% for w in training_block.workouts.all %}
+      <a class="card card-hover block" href="{% url 'plans:workout_detail' w.pk %}">
+        <div class="flex items-center justify-between gap-4">
+          <div class="min-w-0">
+            <div class="truncate font-semibold">D+{{ w.offset_days }} — {{ w.title }}</div>
+            <div class="muted mt-1">{{ training_block.title }}</div>
+          </div>
+          {% if w.is_completed %}
+            <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs text-emerald-700">Completed</span>
+          {% else %}
+            <span class="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-700">Open</span>
+          {% endif %}
+        </div>
       </a>
-      {% if w.is_completed %} ✅ {% endif %}
-    </li>
-  {% empty %}
-    <li>No workouts</li>
-  {% endfor %}
-</ul>
+    {% empty %}
+      <div class="card">
+        <h2 class="text-base font-semibold">No workouts</h2>
+        <p class="muted mt-1">This block has no workouts yet.</p>
+      </div>
+    {% endfor %}
+  </div>
 
 {% endblock %}

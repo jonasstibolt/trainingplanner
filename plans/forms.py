@@ -33,3 +33,7 @@ class PlanForm(forms.ModelForm):
         # Only for "create" (instance doesn't exist yet)
         if not self.instance.pk and not self.initial.get("current_markdown"):
             self.initial["current_markdown"] = DEFAULT_MARKDOWN
+
+        for f in self.fields.values():
+            f.widget.attrs["class"] = "input"
+

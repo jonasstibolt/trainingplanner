@@ -1,57 +1,86 @@
 {% extends "plans/base.html" %}
-{% block title %}{{ exercise.name }}{% endblock %}
+{% block title %}{{ exercise.name }} · Exercise{% endblock %}
 {% block content %}
 
-<h1>{{ exercise.name }}</h1>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="h1">{{ exercise.name }}</h1>
+      {% if exercise.is_unsorted %}
+        <p class="muted mt-1">Auto-created exercise. Consider merging into a canonical name.</p>
+      {% else %}
+        <p class="muted mt-1">History and sessions.</p>
+      {% endif %}
+    </div>
 
-{% if exercise.is_unsorted %}
-  <p><em>This exercise is unsorted (auto-created). Consider renaming/merging later.</em></p>
-{% endif %}
+    <a class="btn-ghost" href="{% url 'plans:exercise_list' %}">Back</a>
+  </div>
 
-<hr>
+  {% if exercise.is_unsorted %}
+    <div class="card mt-6 bg-amber-200">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div class="font-semibold">Merge this exercise - ADMIN FUNCTION</div>
+          <div class="muted mt-1">Move all logged sessions/items onto another exercise ID, then delete this one.</div>
+        </div>
+      </div>
 
-<h2>History</h2>
+      <form class="mt-4 flex gap-2" method="post" action="{% url 'plans:merge_exercises_from_form' exercise.pk %}">
+        {% csrf_token %}
+        <input class="input" name="target_id" inputmode="numeric" placeholder="Target exercise ID (e.g. 42)">
+        <button class="btn-primary" type="submit">Merge</button>
+      </form>
 
-<ul>
-  {% for session in sessions %}
-    <li>
-      <strong>{{ session.performed_at|date:"Y-m-d H:i" }}</strong>
-      — Workout:
-      <a href="{% url 'plans:workout_detail' session.workout_item.workout.pk %}">
-        {{ session.workout_item.workout.title }}
-      </a>
-      — <a href="{% url 'plans:item_session_detail' session.pk %}">open session</a>
+      <p class="muted mt-2">Tip: open the target exercise in another tab and copy its ID from the URL.</p>
+    </div>
+  {% endif %}
 
-      <ol>
-        {% for s in session.sets.all %}
-          <li>
-            {% if s.reps %}{{ s.reps }} reps{% endif %}
-            {% if s.weight_kg %} @ {{ s.weight_kg }} kg{% endif %}
-            {% if s.distance_m %} — {{ s.distance_m }} m{% endif %}
-            {% if s.duration_sec %} — {{ s.duration_sec }} sec{% endif %}
-            {% if s.rest_sec %} — rest {{ s.rest_sec }} sec{% endif %}
-            {% if s.note %}<br><em>{{ s.note }}</em>{% endif %}
-          </li>
-        {% empty %}
-          <li>No sets</li>
-        {% endfor %}
-      </ol>
-    </li>
-  {% empty %}
-    <li>No history yet.</li>
-  {% endfor %}
-</ul>
+  <div class="mt-6">
+    <h2 class="text-lg font-semibold tracking-tight">History</h2>
+    <div class="muted mt-1">Most recent sessions first.</div>
+  </div>
 
-{% if exercise.is_unsorted %}
-  <hr>
-  <p>ADMIN FUNCTION - DO NOT TOUCH</p>
-  <form method="post" action="{% url 'plans:merge_exercises_from_form' exercise.pk %}">
-  {% csrf_token %}
-  <input name="target_id" placeholder="Target exercise ID">
-  <button type="submit">Merge</button>
-</form>
+  <div class="mt-3 grid gap-3">
+    {% for session in sessions %}
+      <div class="card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="font-semibold">{{ session.performed_at|date:"Y-m-d H:i" }}</div>
+            <div class="muted mt-1">
+              Workout:
+              <a class="underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-500"
+                 href="{% url 'plans:workout_detail' session.workout_item.workout.pk %}">
+                {{ session.workout_item.workout.title }}
+              </a>
+              ·
+              <a class="underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-500"
+                 href="{% url 'plans:item_session_detail' session.pk %}">
+                Open session
+              </a>
+            </div>
+          </div>
+        </div>
 
-{% endif %}
-
+        <div class="mt-4 grid gap-2">
+          {% for s in session.sets.all %}
+            <div class="rounded-xl bg-zinc-50 px-3 py-2 text-sm">
+              {% if s.reps %}<span class="font-medium">{{ s.reps }}</span> reps{% endif %}
+              {% if s.weight_kg %} <span class="text-zinc-500">·</span> <span class="font-medium">{{ s.weight_kg }}</span> kg{% endif %}
+              {% if s.distance_m %} <span class="text-zinc-500">·</span> <span class="font-medium">{{ s.distance_m }}</span> m{% endif %}
+              {% if s.duration_sec %} <span class="text-zinc-500">·</span> <span class="font-medium">{{ s.duration_sec }}</span> sec{% endif %}
+              {% if s.rest_sec %} <span class="text-zinc-500">·</span> rest {{ s.rest_sec }} sec{% endif %}
+              {% if s.note %}<div class="muted mt-1">{{ s.note }}</div>{% endif %}
+            </div>
+          {% empty %}
+            <div class="muted">No sets</div>
+          {% endfor %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="card">
+        <h2 class="text-base font-semibold">No history yet</h2>
+        <p class="muted mt-1">Log a session from a workout to populate history.</p>
+      </div>
+    {% endfor %}
+  </div>
 
 {% endblock %}

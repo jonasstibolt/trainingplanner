@@ -1,19 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit {{ plan.title }}</title>
-</head>
-<body>
-    <h1>Edit {{ plan.title }}</h1>
+{% extends "plans/base.html" %}
 
-    <form method="post">
-        {% csrf_token %}
+{% block title %}Edit {{ plan.title }}{% endblock %}
 
-        {{ form.as_p }}
+{% block content %}
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="h1">Edit plan</h1>
+      <p class="muted">{{ plan.title }}</p>
+    </div>
 
-        <button type="submit">Save</button>
+    <a class="btn-ghost" href="{% url 'plans:plan_detail' plan.pk %}">Cancel</a>
+  </div>
+
+  <div class="card mt-6">
+    <form method="post" class="grid gap-4">
+      {% csrf_token %}
+
+      {# simple styling for default Django form output #}
+      {{ form.as_p }}
+
+      <div class="flex items-center gap-2">
+        <button class="btn-primary" type="submit">Save</button>
+        <a class="btn-secondary" href="{% url 'plans:plan_detail' plan.pk %}">Cancel</a>
+      </div>
     </form>
-
-    <a href="{% url 'plans:plan_detail' plan.pk %}">Cancel</a>
-</body>
-</html>
+  </div>
+{% endblock %}

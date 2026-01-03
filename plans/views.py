@@ -37,7 +37,12 @@ def plan_list(request):
 def plan_detail(request, pk):
     plan = get_object_or_404(Plan, pk=pk)
     versions = plan.versions.all()
-    return render(request, "plans/plan_detail.html", {"plan": plan, "versions": versions})
+    blocks = plan.blocks.all()  # <-- add this (adjust related_name if needed)
+    return render(
+        request,
+        "plans/plan_detail.html",
+        {"plan": plan, "versions": versions, "blocks": blocks},
+    )
 
 def plan_edit(request, pk):
     plan = get_object_or_404(Plan, pk=pk)
@@ -130,17 +135,28 @@ def start_item_session(request, item_id):
 
 def item_session_detail(request, session_id):
     session = get_object_or_404(WorkoutItemSession, pk=session_id)
-    return render(request, "plans/item_session_detail.html", {"session": session})
+    sets = session.sets.order_by("-id")
+    return render(request, "plans/item_session_detail.html", {
+    "session": session,
+    "sets": sets,
+})
 
 @require_POST
 def add_set_to_session(request, session_id):
     session = get_object_or_404(WorkoutItemSession, pk=session_id)
 
-    # auto-increment order
+    def to_int(x):
+        try:
+            return int(x) if x not in (None, "") else None
+        except (TypeError, ValueError):
+            return None
+
     next_order = (session.sets.aggregate(models.Max("order"))["order__max"] or 0) + 1
 
+    rir_or_rpe = request.POST.get("rir_or_rpe") or None
     reps = request.POST.get("reps") or None
-    weight_kg = request.POST.get("weight_kg") or None
+    weight_kg_raw = (request.POST.get("weight_kg") or "").strip().replace(",", ".")
+    weight_kg = weight_kg_raw or None
     distance_m = request.POST.get("distance_m") or None
     duration_sec = request.POST.get("duration_sec") or None
     rest_sec = request.POST.get("rest_sec") or None
@@ -149,15 +165,17 @@ def add_set_to_session(request, session_id):
     WorkoutSet.objects.create(
         session=session,
         order=next_order,
-        reps=int(reps) if reps else None,
-        weight_kg=weight_kg if weight_kg else None,
-        distance_m=int(distance_m) if distance_m else None,
-        duration_sec=int(duration_sec) if duration_sec else None,
-        rest_sec=int(rest_sec) if rest_sec else None,
+        rir_or_rpe=to_int(rir_or_rpe),
+        reps=to_int(reps),
+        weight_kg=weight_kg,
+        distance_m=to_int(distance_m),
+        duration_sec=to_int(duration_sec),
+        rest_sec=to_int(rest_sec),
         note=note,
     )
 
     return redirect("plans:item_session_detail", session_id=session.pk)
+
 
 @require_POST
 def delete_set(request, set_id):
@@ -176,9 +194,10 @@ def delete_session(request, session_id):
 def exercise_detail(request, pk):
     exercise = get_object_or_404(Exercise, pk=pk)
 
-    if request.method == "POST" and exercise.is_unsorted:
-        target_id = request.POST.get("target_id")
-        return redirect("plans:merge_exercises", source_id=exercise.pk, target_id=target_id)
+    # if request.method == "POST" and exercise.is_unsorted:
+    #     target_id = request.POST.get("target_id")
+    #     return redirect("plans:merge_exercises", source_id=exercise.pk, target_id=target_id)
+    # dead code?
 
     sessions = (
         WorkoutItemSession.objects
