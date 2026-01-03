@@ -1,10 +1,25 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, render
 from django.db.models import Q
 from .models import Plan, PlanVersion, Tag, Workout, Block, WorkoutItem, WorkoutItemSession, WorkoutSet, Exercise
 from .forms import PlanForm
 from django.views.decorators.http import require_POST
 from django.db import models, transaction
+from datetime import date, timedelta
 
+def home(request):
+    active_plan = Plan.objects.filter(is_active=True).first()
+
+    today = date.today()
+    ctx = {
+        "active_plan": active_plan,
+        "yesterday_label": (today - timedelta(days=1)).isoformat(),
+        "today_label": today.isoformat(),
+        "tomorrow_label": (today + timedelta(days=1)).isoformat(),
+        "yesterday_items": [],
+        "today_items": [],
+        "tomorrow_items": [],
+    }
+    return render(request, "plans/home.html", ctx)
 
 
 def plan_list(request):
@@ -43,6 +58,12 @@ def plan_detail(request, pk):
         "plans/plan_detail.html",
         {"plan": plan, "versions": versions, "blocks": blocks},
     )
+
+@require_POST
+def plan_set_active(request, pk):
+    plan = get_object_or_404(Plan, pk=pk)
+    plan.set_active()
+    return redirect("plans:plan_detail", pk=plan.pk)
 
 def plan_edit(request, pk):
     plan = get_object_or_404(Plan, pk=pk)

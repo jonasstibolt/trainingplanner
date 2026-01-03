@@ -19,6 +19,14 @@
     <div class="flex items-center gap-2">
       <a class="btn-secondary" href="{% url 'plans:plan_edit' plan.pk %}">Edit</a>
       <a class="btn-primary" href="{% url 'plans:plan_overview' plan.pk %}">Overview</a>
+      <form method="post" action="{% url 'plans:plan_set_active' plan.pk %}">
+        {% csrf_token %}
+        {% if plan.is_active %}
+            <button class="btn-secondary" type="submit" disabled>Active</button>
+        {% else %}
+            <button class="btn-secondary" type="submit">Set active</button>
+        {% endif %}
+      </form>
     </div>
   </div>
 

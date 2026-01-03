@@ -22,4 +22,6 @@ TODO:
 
 -   Overview is to be a clear timeline with specific dates with WorkoutSessions that can be clicked
 
+-   Fix home url
+
 

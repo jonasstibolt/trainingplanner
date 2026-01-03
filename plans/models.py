@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 
 # Create your models here.
@@ -39,6 +39,11 @@ class Plan(models.Model):
 
     current_markdown = models.TextField(blank=True, default="")
 
+    def set_active(self):
+        with transaction.atomic():
+            Plan.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+            Plan.objects.filter(pk=self.pk).update(is_active=True)
+    
     def __str__(self):
         return self.title
 
